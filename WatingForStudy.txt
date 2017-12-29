@@ -1,0 +1,168 @@
+CPU核心:
+	微码技术
+	状态机
+	sparc架构
+	risc-v指令集 三星手机
+	冯诺依曼和哈佛结构
+	Cortex-R架构的CPU，多级流水线
+	push和pop时,sp会实时变化,但是fp有点例外
+	.data section处的数据反汇编时会被误翻译成指令，所以便有哈佛结构来避免
+	arm指令后面带有eq的就是先判断cpsr的z位是否为1,为1的话就执行指令,否则不执行
+	超标量CPU技术
+	核心有三种硬件扩展：高速缓存和紧耦合内存、内存管理和协处理器接口。
+	TCM紧耦合存储器,TCM is fast SRAM located close to the core and guarantees the clock cycles required to fetch instructions or
+	data—critical for real-time algorithms requiring deterministic behavior.
+	MMU比MPU更要全面和先进,MPU的保护机制更简单,MMU提供细粒度的控制,页表提供虚拟内存到物理内存的映射和访问权限,页表和MMU之间还有TLB缓存
+	协处理器可以连接到ARM处理器。协处理器扩展了处理过程。
+	通过扩展指令集或通过提供配置寄存器来实现核心的特性。通过协处理器接口可以向ARM核心添加多个协处理器
+	The coprocessor can also extend the instruction set by providing a specialized group of new instructions. 
+	For example, there are a set of specialized instructions that can be added to the standard ARM instruction set to 
+	process vector floating-point(VFP)operations.
+	These new instructions are processed in the decode stage of the ARM pipeline. If the decode stage sees a coprocessor instruction, 
+	then it offers it to the relevant coprocessor.But if the coprocessor is not present or doesn’t recognize the instruction, 
+	then the ARM takes an undefined instruction exception, which allows you to emulate the behavior of the
+	coprocessor in software.	
+	每个ARM处理器实现执行特定的指令集体系结构（ISA）
+	虽然ISA修订版可能有多个处理器实现。
+	ISA的发展是为了适应嵌入式市场的需求。ARM对此进行了仔细的管理，因此编写在早期架构修订上执行的代码也将在以后的体系结构修订中执行。
+	在解释架构的演进之前，我们必须介绍ARM处理器的命名。命名法识别单个处理器并提供关于特征集的基本信息。
+
+	协处理器:
+	mcr mrc访问cp15协处理器，msr mrs访问cpsr
+	有空要看下cp15协处理器的寄存器作用介绍
+	kernel里面的arch文件夹里面有各个平台相关的cache调度,其中arm是cp15
+	内存屏障,根源是因为cpu访问内存会乱序,有代码逻辑的乱序和机器执行时的优化缓存乱序
+	mmu:
+		mmu的页表缓存TLB
+		cache和内存之间是block传输的,且有读写缓存TLB
+		cpu和cache之间是word,byte传输的
+		cp15协处理器的cache,mmu调度
+		MPU内存保护单元(以此来实现用户态,系统态)属于协处理器cp15的管辖的范畴,貌似只有在a系列的cpu里面有
+		https://www.cnblogs.com/yangv/p/5368013.html
+		The use of large pages can also improve performance by reducing the number of translation lookaside buffer(TLB)misses
+	cache:
+		cache一般有几种类型：
+		pipt
+		vivt
+		vipt noalias
+		vipt alias
+		pipt vivt vipt 各种类型的缓存 p:physics v:virtual i:index t:tags
+		pipt的cache可以不开mmu就能用，vivt，vipt的cache要开mmu才能用
+		armv7 的dcache是vipt noalias的。icache是vipt alias的。
+		为什么会有cache alias问题呢，为什么amv7 dcache又没有呢，这是armv7 硬件能够自动处理dcache alias问题。
+		http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=4144029&page=1
+		Arm4, Arm5: VIVT
+		Arm6, Arm7:  I-cache VIPT, Dcache VIPT or  PIPT.
+		https://en.wikipedia.org/wiki/CPU_cache#Associativity
+		https://www.cnblogs.com/hoys/archive/2012/10/19/2731421.html
+
+		arm里面有内存一致性总线，AXI总线，还有RAM和ROM是什么鬼
+		http://blog.csdn.net/fivedoumi/article/details/31765657
+		内存一致性涉有到一系列的问题:
+		1)多处理要系统更新cache时,一个处理器修改了cache的内容,第二个处理器将不能访问这个cache,直到这个cache的内容被写内存.
+		在现代处理器中硬件已经做了精心的设计,确保这种事情不会发生,硬件负责保持cache在各个CPU之间一致.
+		2)外围硬件设备可以通过DMA(Direct Memory Access)访问内存,而不让处理器知道,也不会利用cache,这样在内存和cache之间就会出现不同步的情况.
+		管理DMA的操作是操作系统的工作,比如设备驱动程序,它将保证内存与cache的一致性.
+		3)当在cache中的数据比内存中的数据老时,称为stale.如果软件初始化DMA,使设备和RAM之间传递数据,那么软件必须告诉CPU,cache中的条目必须失效.
+		4)当在cache中的数据比内存中的数据新时,称为dirty.在设备驱动程序允许一个设备经DMA从内存读数据时,
+		它必须确保所有的dirty条目写进内存.也叫做flushing或sync cache.
+
+		http://blog.csdn.net/hnzziafyz/article/details/52201851
+
+		Thumb 指令
+		为以 Thumb 状态运行的、基于 ARM 体系结构的处理器的操作进行编码的一个半字或两个半字。 Thumb 指令必须为半字对齐。
+		Thumb 状态
+		执行 Thumb 指令的处理器工作在 Thumb 状态。 当直接通过 BX、BLX 等指令完成时，处理器可切换到 ARM 状态（以识别 ARM 指令）。
+		Thumb-2 指令
+		Thumb-2 是 Thumb 指令集的一项主要增强功能，并且由 ARMv6T2 和 ARMv7M体系结构定义。 Thumb-2 提供了几乎与 ARM 指令集完全一样的功能。
+		它兼有16 位和 32 位指令，并可检索与 ARM 类似的性能，但其代码密度与 Thumb 代码类似。
+		Thumb-2EE 指令
+		Thumb-2 执行环境 (Thumb-2EE) 由 ARMv7 体系结构定义。 Thumb-2EE 指令集基于 Thumb-2，前者进行了一些更改和添加，
+		使得动态生成的代码具有更好的目标，也就是说，就在执行之前或在执行过程中即可在该设备上编译代码。
+		ThumbEE 状态
+		执行 Thumb-2EE 指令的处理器正在以 ThumbEE 状态运行。 在此状态下，该指令集几乎与 Thumb 指令集相同。 
+		不过，有些指令已经修改了行为，有些原有的指令已不再提供，另外还新添了一些指令。
+
+		在ARM体系结构中，ARM指令集中的指令是32位的指令，其执行效率非常高。
+		对于存储系统数据总线为16位的应用系统，ARM体系提供了Thumb指令集。
+		Thumb指令集是对ARM指令集的一个子集重新编码得到的，指令长度为16位。
+		通常在处理器执行ARM程式时，称处理器处于ARM状态；当处理器执行Thumb程式时，称处理器处于Thumb状态。
+		Thumb指令集并没有改动ARM体系地层的程式设计模型，只是在该模型上加上了一些限制条件。
+		Thumb指令集中的数据处理指令的操作数仍然为32位，指令寻址地址也是32位的。
+		通常，Thumb程式比ARM程式更加紧凑，而且对于内存为8位或16位的系统，使用Thumb程式效率更高。
+		不过，在下面一些场合下，程式必须运行在ARM状态，这时就需要混合使用ARM和Thumb程式。
+
+		强调速度的场合，应该使用ARM程式；
+		有些功能只能由ARM程式完成。如：使用或禁止异常中断；
+		当处理器进入异常中断处理程式时，程式状态转换到ARM状态，即在异常中断处理程式入口的一些指令是ARM指令，
+		然后根据需要程式能转换到Thumb状态，在异常中断程式返回前，程式再转换到ARM状态。
+		ARM处理器总是从ARM状态开始执行。因而，如果要在调试器中运行Thumb程式，必须为该Thumb程式添加一个ARM程式头，
+		然后再转换到Thumb状态，执行Thumb程式。
+
+操作系统:
+	ABI
+	EABI
+	Robot OS
+	http://mooc.study.163.com/course/USTC-1000029000#/info
+	原子操作是通过关闭中断来实现的,如果此时发生中断,因为中断标志位没有清零,所以原子操作结束后系统会再次响应中断,但是同一通道的中断只会响应一次
+	因为一个通道的中断标志位只有一个
+	协程
+	MiniX操作系统，微内核设计，被intel在2015年之后的cpu中引入CPU的manage engine中，所以intel的CPU中隐形运行着一个minix操作系统，而且
+	这个intelCPU中内嵌的操作系统拥有完整的网络协议栈和文件系统。
+	MiniX操作系统非常适合用来学习
+	LynxOS操作系统是宏内核设计，基于unix，属于systemV阵营。但是其公司有计划采用Galaxy技术将其改造成微内核架构
+	QNX(Quick UNIX)基于Unix的微内核设计理念的实时操作系统(可能是目前最成功的微内核操作系统)，据统计在汽车市场有75%的占有率，其次是通信领域，
+	思科的高端路由器都是采用的QNX
+	QNX免费版本QNX RTP，有着非常华丽的图形界面
+	QNX RTP的图形用户界面－Photon MicroGUI非常酷
+
+硬件外设:
+	以太网网卡结构和控制
+	TCP/IP ATM
+
+编程语言:
+	c++的模板元编程
+	const_cast
+	static_cast
+	dynamic_cast
+	reinterpreter_cast
+	Ada语言
+	Rust语言
+	Prolog语言
+	Shell语言
+	C语言事件驱动
+	c++11 variadic模板 用户定义文字(user-defined literal)
+	man gcc
+
+算法逻辑:
+	Leetcode
+
+工具使用:
+	cscope插件使用
+
+感想摘抄:
+	不需要放弃，你只需再花一点时间学会Haskell（我大概也就用了半年入了门，所以你也不用慌张）
+	然后从C++的模板元编程开始（你就会觉得简直就像在写Haskell），然后再学C++的其他部分。事半功倍！
+	不过题主也不一定非要学C++维持生计，因为用Haskell的都是欧洲的高薪职位啊。
+
+	命令式：西红柿炒鸡蛋 = 炒（西红柿，鸡蛋)
+	这个时候无论你要不要，计算机已经把西红柿炒鸡蛋已经做好了。即使你不想吃了也不能退单了，菜都已经给你端上来了，
+	不想吃自己扔掉好了，反正钱（CPU，内存）是要花掉的。至于那个等号，只是为了方便在你想吃的时候可以拿这个内存地址取到这盘菜而已。
+	函数式:西红柿炒鸡蛋 = 炒 西红柿 鸡蛋
+	这个时候你只是下了个定义，相当于把菜谱念给计算机听，告诉它西红柿炒鸡蛋这道菜，是西红柿和鸡蛋炒在一起的结果，
+	计算机只是记住了菜谱而并没有去炒菜。
+
+	最后，分享一些关键词，来帮助新手快速理解Haskell基本思想
+	最最最基本的要算是递归
+	进入正题，要看λ演算
+	然后要理解λ演算等价于图灵机
+	接着要知道柯里化
+	如果愿意深入到哲学层面，可以试着理解哥德尔不完备定理
+	我贴得都是中文WIKI，如果觉得不够详尽的话，请自行看英文版。
+
+	Lisp是基于lambda演算设计的编程语言，比较抽象，门槛比较高，但处理问题上简洁优雅。
+	C，java是基于图灵机模型设计的编程语言，比较形象生动，门槛比较低，但处理问题上繁琐复杂。
+	但是，它们在计算能力上是等价的。
+
+	工程（C++），理论（Haskell）和算法建模（ACM）
+	这三件事做成两件应该就能出来见人了，做成三件就算优秀了。
