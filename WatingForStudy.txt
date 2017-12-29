@@ -21,7 +21,7 @@ CPU核心:
 	These new instructions are processed in the decode stage of the ARM pipeline. If the decode stage sees a coprocessor instruction, 
 	then it offers it to the relevant coprocessor.But if the coprocessor is not present or doesn’t recognize the instruction, 
 	then the ARM takes an undefined instruction exception, which allows you to emulate the behavior of the
-	coprocessor in software.	
+	coprocessor in software.
 	每个ARM处理器实现执行特定的指令集体系结构（ISA）
 	虽然ISA修订版可能有多个处理器实现。
 	ISA的发展是为了适应嵌入式市场的需求。ARM对此进行了仔细的管理，因此编写在早期架构修订上执行的代码也将在以后的体系结构修订中执行。
@@ -119,6 +119,9 @@ CPU核心:
 硬件外设:
 	以太网网卡结构和控制
 	TCP/IP ATM
+
+##############################################################################################################################
+##############################################################################################################################
 
 编程语言:
 	c++的模板元编程
