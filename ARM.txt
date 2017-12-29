@@ -2,8 +2,9 @@ ARM核心有三种硬件扩展:
 	高速缓存和紧耦合内存、内存管理和协处理器接口。
 
 TCM紧耦合存储器:
-	TCM is fast SRAM located close to the core and guarantees the clock cycles required to fetch instructions or
-	data-critical for real-time algorithms requiring deterministic behavior.
+	TCM is fast SRAM located close to the core and guarantees the clock cycles
+	required to fetch instructions or data-critical for real-time algorithms 
+	requiring deterministic behavior.
 
 ARM协处理器:
 	The coprocessor can also extend the instruction set by providing a specialized group of new instructions. 
@@ -14,18 +15,22 @@ ARM协处理器:
 	then the ARM takes an undefined instruction exception, which allows you to emulate the behavior of the coprocessor in software.
 	每个ARM处理器实现执行特定的指令集体系结构（ISA）
 	虽然ISA修订版可能有多个处理器实现。
-	ISA的发展是为了适应嵌入式市场的需求。ARM对此进行了仔细的管理，因此编写在早期架构修订上执行的代码也将在以后的体系结构修订中执行。
-	在解释架构的演进之前，我们必须介绍ARM处理器的命名。命名法识别单个处理器并提供关于特征集的基本信息。
+	ISA的发展是为了适应嵌入式市场的需求。ARM对此进行了仔细的管理，因此编写在早期架构修订上执行的代码
+	也将在以后的体系结构修订中执行。在解释架构的演进之前，我们必须介绍ARM处理器的命名。
+	命名法识别单个处理器并提供关于特征集的基本信息。
 
 	协处理器可以连接到ARM处理器。协处理器扩展了处理过程。
 	通过扩展指令集或通过提供配置寄存器来实现核心的特性。通过协处理器接口可以向ARM核心添加多个协处理器
 	ARMV7提供了三条指令:
 		Data Memory Barrier(DMB)
-			数据存储器隔离。DMB 指令保证仅当所有在它前面的存储器访问操作都执行完毕后，才提交(commit)在它后面的存储器访问操作。
+			数据存储器隔离。DMB 指令保证仅当所有在它前面的存储器访问操作都执行完毕后，
+			才提交(commit)在它后面的存储器访问操作。
 		Data Synchronization Barrier(DSB)
-			数据同步隔离。比DMB 严格:仅当所有在它前面的存储器访问操作都执行完毕后,才执行在它后面的指令(亦即任何指令都要等待存储器访问操作
+			数据同步隔离。比DMB 严格:仅当所有在它前面的存储器访问操作都执行完毕后,
+			才执行在它后面的指令(亦即任何指令都要等待存储器访问操作
 		Instruction Synchronization Barrier(ISB)
-			指令同步隔离。最严格：它会清洗流水线，以保证所有它前面的指令都执行完毕之后，才执行它后面的指令
+			指令同步隔离。最严格：它会清洗流水线，以保证所有它前面的指令都执行完毕之后，
+			才执行它后面的指令
 	ARMV6是通过cp15对这些进行相关操作的,ARMV7就不是了...
 	内存屏障,根源是因为cpu访问内存会乱序,有代码逻辑的乱序和机器执行时的优化缓存乱序
 
@@ -62,14 +67,17 @@ mmu:
 	MMU比MPU更要全面和先进,MPU的保护机制更简单,MMU提供细粒度的控制,页表提供虚拟内存到物理内存的映射和访问权限,
 	页表和MMU之间还有TLB缓存
 	https://www.cnblogs.com/yangv/p/5368013.html
-	The use of large pages can also improve performance by reducing the number of translation lookaside buffer(TLB)misses
+	The use of large pages can also improve performance by reducing the number of 
+	translation lookaside buffer(TLB)misses(转换后备缓存)
 
 Thumb 指令:
 	为以 Thumb 状态运行的、基于 ARM 体系结构的处理器的操作进行编码的一个半字或两个半字。 Thumb 指令必须为半字对齐。
 Thumb 状态:
-	执行 Thumb 指令的处理器工作在 Thumb 状态。 当直接通过 BX、BLX 等指令完成时，处理器可切换到 ARM 状态（以识别 ARM 指令）。
+	执行 Thumb 指令的处理器工作在 Thumb 状态。 当直接通过 BX、BLX 等指令完成时，
+	处理器可切换到 ARM 状态（以识别 ARM 指令）。
 Thumb-2 指令:
-	Thumb-2 是 Thumb 指令集的一项主要增强功能，并且由 ARMv6T2 和 ARMv7M体系结构定义。 Thumb-2 提供了几乎与 ARM 指令集完全一样的功能。
+	Thumb-2 是 Thumb 指令集的一项主要增强功能，并且由 ARMv6T2 和 ARMv7M体系结构定义。 
+	Thumb-2 提供了几乎与 ARM 指令集完全一样的功能。
 	它兼有16 位和 32 位指令，并可检索与 ARM 类似的性能，但其代码密度与 Thumb 代码类似。
 Thumb-2EE 指令:
 	Thumb-2 执行环境 (Thumb-2EE) 由 ARMv7 体系结构定义。 Thumb-2EE 指令集基于 Thumb-2，前者进行了一些更改和添加，

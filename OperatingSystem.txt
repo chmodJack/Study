@@ -1,0 +1,22 @@
+操作系统:
+	ABI
+	EABI
+	Robot OS
+	http://mooc.study.163.com/course/USTC-1000029000#/info
+	原子操作是通过关闭中断来实现的,如果此时发生中断,因为中断标志位没有清零,
+	所以原子操作结束后系统会再次响应中断,但是同一通道的中断只会响应一次
+	因为一个通道的中断标志位只有一个
+	协程是什么？
+MiniX:
+	MiniX操作系统，微内核设计，被intel在2015年之后的cpu中引入CPU的manage engine中，
+	所以intel的CPU中隐形运行着一个minix操作系统，而且
+	这个intelCPU中内嵌的操作系统拥有完整的网络协议栈和文件系统。
+	MiniX操作系统非常适合用来学习
+LynxOS:
+	LynxOS操作系统是宏内核设计，基于unix，属于systemV阵营。
+	但是其公司有计划采用Galaxy技术将其改造成微内核架构
+QNX:
+	QNX(Quick UNIX)基于Unix的微内核设计理念的实时操作系统(可能是目前最成功的微内核操作系统)，据统计在汽车市场有75%的占有率，其次是通信领域，
+	思科的高端路由器都是采用的QNX
+	QNX免费版本QNX RTP，有着非常华丽的图形界面
+	QNX RTP的图形用户界面－Photon MicroGUI非常酷
